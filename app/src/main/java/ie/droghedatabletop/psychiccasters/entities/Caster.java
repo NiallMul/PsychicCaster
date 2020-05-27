@@ -13,11 +13,10 @@ public class Caster {
     @ColumnInfo(name = "caster_name")
     private String casterName;
 
-    @NonNull
     @ColumnInfo(name = "powers")
     private String powers;
 
-    public Caster(@NonNull String casterName, @NonNull String powers) {
+    public Caster(@NonNull String casterName, String powers) {
         this.casterName = casterName;
         this.powers = powers;
     }
@@ -27,7 +26,6 @@ public class Caster {
         return casterName;
     }
 
-    @NonNull
     public String getPowers() {
         return powers;
     }
