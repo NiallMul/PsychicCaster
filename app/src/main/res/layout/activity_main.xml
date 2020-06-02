@@ -8,26 +8,50 @@
     <ExpandableListView
         android:id="@+id/lvExp"
         android:layout_width="match_parent"
-        android:layout_height="500dp" />
+        android:layout_height="500dp">
+
+    </ExpandableListView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_end"
-            android:layout_width="wrap_content"
-            android:layout_height="66dp"
-            android:text="@string/end_of_turn"
-            android:textAlignment="center" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_load"
-            android:layout_width="wrap_content"
-            android:layout_height="66dp"
-            android:layout_weight="1"
-            android:text="@string/load_content"
-            android:textAlignment="center" />
+            <Button
+                android:id="@+id/button_add_caster"
+                android:layout_width="wrap_content"
+                android:layout_height="66dp"
+                android:layout_weight="1"
+                android:text="@string/add_caster" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_load"
+                android:layout_width="wrap_content"
+                android:layout_height="66dp"
+                android:layout_weight="1"
+                android:text="@string/load_content"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_end"
+                android:layout_width="match_parent"
+                android:layout_height="66dp"
+                android:text="@string/end_of_turn"
+                android:textAlignment="center" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

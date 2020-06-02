@@ -1,5 +1,6 @@
 package ie.droghedatabletop.psychiccasters.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -12,10 +13,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import ie.droghedatabletop.psychiccasters.R;
+import ie.droghedatabletop.psychiccasters.entities.Caster;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -35,7 +39,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosititon) {
-        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
+        return Objects.requireNonNull(this._listDataChild.get(this._listDataHeader.get(groupPosition)))
                 .get(childPosititon);
     }
 
@@ -44,6 +48,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return childPosition;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
@@ -53,6 +58,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            assert infalInflater != null;
             convertView = infalInflater.inflate(R.layout.list_item, null);
         }
 
@@ -70,7 +76,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
+        return Objects.requireNonNull(this._listDataChild.get(this._listDataHeader.get(groupPosition)))
                 .size();
     }
 
@@ -89,6 +95,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return groupPosition;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
@@ -122,15 +129,28 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return switchList;
     }
 
-    private void showDialog(String switchText){
+    private void showDialog(String switchText) {
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setTitle(switchText);
-        View view = LayoutInflater.from(_context).inflate(R.layout.dialog_view, null);
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(_context).inflate(R.layout.dialog_view, null);
         final EditText edit_text = view.findViewById(R.id.edit_dialog);
         edit_text.setText(switchText);
         builder.setView(view);
         builder.setNegativeButton("cancel", null);
         builder.setPositiveButton("confirm", (dialog, which) -> childSwitch.setText(edit_text.getText().toString()));
         builder.show();
+    }
+
+    public void addNewGroup(Caster newCaster) {
+        _listDataHeader.add(newCaster.getCasterName());
+        _listDataChild.put(newCaster.getCasterName(), Arrays.asList(newCaster.getPowers().split(",")));
+    }
+
+    public List<String> getGroups() {
+        return _listDataHeader;
+    }
+
+    public HashMap<String, List<String>> getChildren() {
+        return _listDataChild;
     }
 }

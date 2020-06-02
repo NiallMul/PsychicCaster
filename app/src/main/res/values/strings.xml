@@ -2,4 +2,5 @@
     <string name="app_name">PsychicCasters</string>
     <string name="load_content">Load content</string>
     <string name="end_of_turn">End of Turn</string>
+    <string name="add_caster">Add caster</string>
 </resources>

@@ -24,26 +24,46 @@ public class MainActivity extends AppCompatActivity {
     private ExpandableListView expListView;
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listDataChild;
+    private LiveData<List<Caster>> listOfCasters;
+    private List<Caster> casterList;
+    private ArrayList<String> powers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        casterViewModel = new ViewModelProvider(this).get(CasterViewModel.class);
         prepareListData();
 
-        final Button startTurnButton = findViewById(R.id.button_load);
-        startTurnButton.setOnClickListener(v -> {
-            expListView = findViewById(R.id.lvExp);
-            listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-            expListView.setAdapter(listAdapter);
+        final Button addCasterButton = findViewById(R.id.button_add_caster);
+        addCasterButton.setOnClickListener(addCaster -> {
+            addNewCaster();
+        });
+
+        final Button loadDataButton = findViewById(R.id.button_load);
+        loadDataButton.setOnClickListener(loadCasters -> {
+            loadList();
+            loadDataButton.setEnabled(false);
         });
 
         final Button endTurnButton = findViewById(R.id.button_end);
-        endTurnButton.setOnClickListener(v -> {
+        endTurnButton.setOnClickListener(resetSpells -> {
             for (Switch childswitch : listAdapter.getSwitch()) {
                 childswitch.setChecked(false);
             }
         });
+    }
+
+    private void addNewCaster() {
+        Caster newCaster = new Caster("new caster",
+                "sample power,sample power");
+        if (listAdapter != null) {
+            casterViewModel.insert(newCaster);
+            listAdapter.addNewGroup(newCaster);
+            listDataHeader = listAdapter.getGroups();
+            listDataChild = listAdapter.getChildren();
+            loadList();
+        }
     }
 
     /*
@@ -53,11 +73,9 @@ public class MainActivity extends AppCompatActivity {
         listDataHeader = new ArrayList<>();
         listDataChild = new HashMap<>();
 
-        casterViewModel = new ViewModelProvider(this).get(CasterViewModel.class);
         casterViewModel.getCasters().observe(this, casters -> {
-            LiveData<List<Caster>> listOfCasters = casterViewModel.getCasters();
-            List<Caster> casterList = listOfCasters.getValue();
-            ArrayList<String> powers;
+            listOfCasters = casterViewModel.getCasters();
+            casterList = listOfCasters.getValue();
             // Adding child data
             assert casterList != null;
             for (Caster caster : casterList) {
@@ -66,5 +84,14 @@ public class MainActivity extends AppCompatActivity {
                 listDataChild.put(caster.getCasterName(), powers);
             }
         });
+    }
+
+    synchronized private void loadList() {
+        expListView = findViewById(R.id.lvExp);
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+        expListView.setAdapter(listAdapter);
+        //notifydatasetchanged does not seem to work with arrays
+        //notifyDatasetinvalidated seems to tolerate this adapter
+        listAdapter.notifyDataSetChanged();
     }
 }
