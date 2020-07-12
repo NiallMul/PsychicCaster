@@ -67,7 +67,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         childSwitch.setText(childText);
 
         childSwitch.setOnLongClickListener(listener -> {
-            showDialog(childText);
+            showChildItemDialog(childText);
             return true;
         });
         switchList.add(childSwitch);
@@ -129,10 +129,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return switchList;
     }
 
-    private void showDialog(String switchText) {
+    private void showChildItemDialog(String switchText) {
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setTitle(switchText);
-        @SuppressLint("InflateParams") View view = LayoutInflater.from(_context).inflate(R.layout.dialog_view, null);
+        View view = LayoutInflater.from(_context).inflate(R.layout.dialog_view, null);
         final EditText edit_text = view.findViewById(R.id.edit_dialog);
         edit_text.setText(switchText);
         builder.setView(view);
@@ -153,4 +153,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public HashMap<String, List<String>> getChildren() {
         return _listDataChild;
     }
+
+
 }

@@ -1,10 +1,13 @@
 package ie.droghedatabletop.psychiccasters;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.Switch;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,9 +39,7 @@ public class MainActivity extends AppCompatActivity {
         prepareListData();
 
         final Button addCasterButton = findViewById(R.id.button_add_caster);
-        addCasterButton.setOnClickListener(addCaster -> {
-            addNewCaster();
-        });
+        addCasterButton.setOnClickListener(addCaster -> addNewCaster());
 
         final Button loadDataButton = findViewById(R.id.button_load);
         loadDataButton.setOnClickListener(loadCasters -> {
@@ -55,15 +56,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addNewCaster() {
-        Caster newCaster = new Caster("new caster",
-                "sample power,sample power");
-        if (listAdapter != null) {
-            casterViewModel.insert(newCaster);
-            listAdapter.addNewGroup(newCaster);
-            listDataHeader = listAdapter.getGroups();
-            listDataChild = listAdapter.getChildren();
-            loadList();
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Caster");
+
+        // Set up the input
+        final EditText casterNameInput = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        casterNameInput.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(casterNameInput);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String casterName = casterNameInput.getText().toString();
+            AlertDialog.Builder subAlert = new AlertDialog.Builder(builder.getContext());
+            subAlert.setTitle("Add Powers (Separate with ,)");
+
+            // Set up the input
+            final EditText casterPowersInput = new EditText(builder.getContext());
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            casterPowersInput.setInputType(InputType.TYPE_CLASS_TEXT);
+            subAlert.setView(casterPowersInput);
+
+            // Set up the buttons
+            subAlert.setPositiveButton("OK", (dialog1, which1) -> {
+                String casterPowers = casterPowersInput.getText().toString();
+                Caster newCaster = new Caster(casterName, casterPowers);
+                if (listAdapter != null) {
+                    casterViewModel.insert(newCaster);
+                    listAdapter.addNewGroup(newCaster);
+                    listDataHeader = listAdapter.getGroups();
+                    listDataChild = listAdapter.getChildren();
+                    loadList();
+                }
+            });
+            subAlert.setNegativeButton("Cancel", (dialog12, which12) -> dialog12.cancel());
+
+            subAlert.show();
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+
     }
 
     /*
@@ -88,10 +121,10 @@ public class MainActivity extends AppCompatActivity {
 
     synchronized private void loadList() {
         expListView = findViewById(R.id.lvExp);
-        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+        listAdapter = new ExpandableListAdapter(MainActivity.this.getApplicationContext(), listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
-        //notifydatasetchanged does not seem to work with arrays
-        //notifyDatasetinvalidated seems to tolerate this adapter
+        expListView.refreshDrawableState();
+        listAdapter.notifyDataSetInvalidated();
         listAdapter.notifyDataSetChanged();
     }
 }
